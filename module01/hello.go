@@ -5,5 +5,6 @@ import (
 )
 
 func main() {
-	fmt.Println("Hello!")
+	name := "Alex"
+	fmt.Printf("Hello, %s!\r\n", name)
 }
