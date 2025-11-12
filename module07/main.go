@@ -1,6 +1,7 @@
 package main
 
 import (
+	"Project_1/module07/main/portScanner"
 	"fmt"
 	"time"
 )
@@ -8,15 +9,22 @@ import (
 func main() {
 	// Задача 1
 	ch := make(chan int)
+
+	defer close(ch)
+
 	n := 4
 	go increment(ch, n)
 	fmt.Println(<-ch)
 
+	// Задание 2
 	ch1 := make(chan int, 10)
 	ch2 := make(chan int, 10)
 	stopChan := make(chan struct{}, 10)
 
-	// Задание 2
+	defer close(ch1)
+	defer close(ch2)
+	defer close(stopChan)
+
 	//ch1 <- 10
 	ch2 <- 10
 	//stopChan <- *new(Str)
@@ -37,6 +45,9 @@ func main() {
 	in2 := make(chan int, 10)
 	out := make(chan int, 10)
 
+	defer close(in1)
+	defer close(in2)
+
 	fn := func(i int) int { return i * i }
 	go merge2Channels(fn, in1, in2, out, numJobs)
 
@@ -45,9 +56,12 @@ func main() {
 		in2 <- b + 1
 	}
 
-	for c := 1; c <= numJobs; c++ {
-		fmt.Printf("Для job-ы №%v результат = %v\n", c, <-out)
+	for v := range out {
+		fmt.Printf("Result = %v\n", v)
 	}
+
+	// Лабораторная
+	portScanner.Scan(1, 10000, 4, 5)
 }
 
 func increment(ch chan int, n int) {
@@ -76,6 +90,7 @@ func merge2Channels(fn func(int) int, in1 <-chan int, in2 <-chan int, out chan<-
 		x2 := <-in2
 		out <- fn(x1) + fn(x2)
 	}
+	close(out)
 }
 
 type Str struct{}
