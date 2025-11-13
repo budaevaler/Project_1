@@ -18,6 +18,7 @@ func main() {
 	defer file.Close()
 
 	reader := csv.NewReader(file)
+	reader.Comma = ';'
 
 	_, err = reader.Read()
 	if err != nil && err != io.EOF {
